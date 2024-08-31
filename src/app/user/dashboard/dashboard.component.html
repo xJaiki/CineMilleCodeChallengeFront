@@ -1,0 +1,42 @@
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Film questa settimana</h2>
+
+  <div *ngFor="let detail of scheduleDetails" class="card mb-4 shadow-sm">
+    <div class="row no-gutters">
+      <div class="col-md-4">
+        <img [src]="detail.movie.posterUrl" class="card-img" alt="Poster">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">{{ detail.movie.title }}</h5>
+
+          <div class="row">
+            <div class="col-md-6">
+              <p class="card-text"><b>Anno:</b> {{ detail.movie.year }}</p>
+              <p class="card-text"><b>Durata:</b> {{ detail.movie.runtime }} minuti</p>
+              <p class="card-text"><b>Generi:</b> {{ detail.movie.genres }}</p>
+              <p class="card-text"><b>Regia:</b> {{ detail.movie.director }}</p>
+              <p class="card-text"><b>Attori:</b> {{ detail.movie.actors }}</p>
+            </div>
+            <div class="col-md-6">
+              <p class="card-text"><b>Sala:</b> {{ detail.room.name }}</p>
+              <p class="card-text"><b>Posti disponibili:</b> {{ detail.room.capacity }}</p>
+              <p class="card-text"><b>IMAX:</b> {{ detail.room.isIMAX ? 'Si' : 'No' }}</p>
+            </div>
+          </div>
+
+          <p class="card-text"><b>Trama:</b> {{ detail.movie.plot }}</p>
+          
+          <hr>
+          
+          <div class="text-right">
+            <button class="btn btn-primary" (click)="
+              openModal();
+              "
+            >Prenota</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

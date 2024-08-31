@@ -1,0 +1,44 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light" *ngIf=" isAuthenticated()">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/dashboard">
+        <img src="assets/cinemille-logo.png" alt="" width="50" height="50" class="d-inline-block align-text-top">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <!-- USER: Home mostra la lista dei film attualmente programmati -->
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/dashboard" *ngIf="isAuthenticated()">Dashboard</a>
+          </li>
+          <!-- USER: Movies mostra la lista di tutti i film che utente ha salvato -->
+          <li class="nav-item" *ngIf="isUser()">
+            <a class="nav-link" routerLink="/schedule">Programmazione settimanale</a>
+          </li>
+          <!-- ADMIN: Movie Management permette di aggiungere, modificare e rimuovere film -->
+          <li class="nav-item" *ngIf="isAdmin()">
+            <a class="nav-link" routerLink="/movie-management">Gestione Film</a>
+          </li>
+          <!-- ADMIN: Schedule Management permette di aggiungere, modificare e rimuovere programmazioni -->
+          <li class="nav-item" *ngIf="isAdmin()">
+            <a class="nav-link" routerLink="/schedule-management">Gestione Programmazione</a>
+          </li>
+          <!-- ADMIN: Room Management permette di aggiungere, modificare e rimuovere sale -->
+          <li class="nav-item" *ngIf="isAdmin()">
+            <a class="nav-link" routerLink="/room-management">Gestione Sale</a>
+          </li>
+          <!-- ADMIN: User Management permette di aggiungere, modificare e rimuovere utenti -->
+          <li class="nav-item" *ngIf="isAdmin()">
+            <a class="nav-link" routerLink="/user-management">Gestione Utenti</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item" *ngIf="isAuthenticated()">
+                <a class="btn bg-danger text-white nav-link" (click)="logout()">Logout</a>
+            </li>            
+        </ul>
+      </div>
+    </div>
+  </nav>
+  

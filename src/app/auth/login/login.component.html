@@ -1,0 +1,26 @@
+<div class="login-background"></div>
+  <div class="container d-flex justify-content-center align-items-center vh-100" style="user-select: none;">
+    <div class="card login-card shadow-sm p-4">
+      <div class="text-center mb-4">
+        <img src="assets/cinemille-logo.png" alt="CineMille Logo" class="login-logo">
+      </div>
+      <h2 class="text-center mb-4">Login</h2>
+      <form (ngSubmit)="login()">
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" id="username" [(ngModel)]="username" name="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" [(ngModel)]="password" name="password" class="form-control" required>
+        </div>
+        <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </div>
+      </form>
+      <div class="text-center mt-3">
+        <a href="/register" class="text-muted">Non hai un account? Registrati</a>
+      </div>
+    </div>
+  </div>

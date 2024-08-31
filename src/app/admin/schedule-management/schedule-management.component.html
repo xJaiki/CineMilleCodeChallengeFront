@@ -1,0 +1,184 @@
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Programmazione Settimanale</h2>
+  <div class="d-flex flex-row">
+    <select 
+      class="form-select mb-3"
+      [(ngModel)]="selectYear"
+      (change)="onChangeYear(selectYear)"
+    >
+      <option value="" disabled selected>Seleziona un anno</option>
+      <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+    </select>
+    <p class="d-inline-flex gap-1 ms-2">
+      <button
+        class="btn btn-primary"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseExample"
+        aria-expanded="false"
+        aria-controls="collapseExample"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          fill="currentColor"
+          class="bi bi-info-circle"
+          viewBox="0 0 16 16"
+        >
+          <path
+            d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"
+          />
+          <path
+            d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
+          />
+        </svg>
+      </button>
+    </p>
+  </div>
+  <div class="collapse my-2" id="collapseExample">
+    <div class="card card-body">
+      <p>
+        Seleziona un anno per visualizzare la programmazione settimanale
+        relativa.
+      </p>
+      <p>
+        Le sale che gia hanno una programmazione assegnata, non vengono mostrate nella lista delle sale disponibili.
+      </p>
+      <p>
+        Per visualizzare i dettagli di una settimana, clicca sul pulsante "Visualizza Dettagli".
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 mb-3" *ngFor="let week of weeks">
+      <div
+        class="card shadow-sm"
+        [ngStyle]="{ borderLeft: '5px solid ' + generateWeekColor(week.startDate) }"
+      >
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <h5 class="mb-0">Settimana {{ week.weekNumber }}</h5>
+          <span class="badge" [ngClass]="{ 'bg-primary': week.movies.length > 0 ,  'bg-secondary opacity-25 ': week.movies.length === 0 }">
+            {{ week.movies.length }} Film
+          </span>
+        </div>
+        <div class="card-body">
+          <p class="mb-2">
+            <strong>Periodo:</strong><br />
+            {{ week.startDate }} - {{ week.endDate }}
+          </p>
+          <div class="d-grid gap-2">
+            <button
+              class="btn btn-primary btn-block"
+              (click)="openModal('addMovie', week)"
+            >
+              Assegna Film
+            </button>
+            <button
+              class="btn btn-secondary btn-block"
+              (click)="viewDetails(week)"
+            >
+              Visualizza Dettagli
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modale per Assegnazione Film -->
+<div class="modal d-block" tabindex="-1" *ngIf="isAddMovieModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Assegna Film</h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeModal('addMovie')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form #scheduleForm="ngForm" (ngSubmit)="onSubmit()">
+          <div class="mb-3">
+            <label for="movie" class="form-label">Film</label>
+            <select
+              id="movie"
+              class="form-select"
+              [(ngModel)]="selectedMovie"
+              name="movie"
+              required
+            >
+              <option value="" disabled selected>Seleziona un film</option>
+              <option *ngFor="let movie of movies" [value]="movie.id">
+                {{ movie.title }}
+              </option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="room" class="form-label">Sala</label>
+            <select
+              id="room"
+              class="form-select"
+              [(ngModel)]="selectedRoom"
+              name="room"
+              required
+            >
+              <option value="" disabled selected>Seleziona una sala</option>
+              <option *ngFor="let room of rooms" [value]="room.id">
+                <strong>{{ room.name }}</strong> ({{ room.capacity }} posti) - {{ room.isIMAX ? 'IMAX' : 'Standard' }}
+              </option>
+            </select>
+          </div>
+          <input hidden [(ngModel)]="startDate" name="startDate" value="{{ selectedWeek }}" />
+          <input hidden [(ngModel)]="endDate" name="endDate" value="{{ selectedWeek }}" />
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-block">
+              Assegna
+            </button>
+            <span class="badge bg-danger" *ngIf="errorMessage">{{ errorMessage }}</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modale per Visualizzazione Dettagli -->
+<div class="modal d-block" tabindex="-1" *ngIf="isViewInfoModal">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          Dettagli Settimana {{ selectedWeek?.weekNumber }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeModal('boh')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col">
+            <h5 class="mb-3">Film Assegnati</h5>
+            <ul class="list-group">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center"
+                *ngFor="let movie of selectedWeek?.movies"
+              >
+                {{ movie.title }}
+                <span class="badge bg-primary rounded-pill">
+                  <strong>{{movie.room.name}}</strong> ({{ movie.room.capacity }} posti) - {{ movie.room.isIMAX ? 'IMAX' : 'Standard'
+                }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

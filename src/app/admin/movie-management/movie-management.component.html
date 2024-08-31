@@ -1,0 +1,311 @@
+<div class="container mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>
+      Gestione Film: <span class="badge bg-primary">{{ movies.length }}</span>
+    </h2>
+
+    <button class="btn btn-primary" (click)="openAddMovieModal()">
+      Aggiungi Film
+    </button>
+  </div>
+
+  <p class="d-inline-flex gap-1">
+    <button
+      class="btn btn-primary"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#collapseExample"
+      aria-expanded="false"
+      aria-controls="collapseExample"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        fill="currentColor"
+        class="bi bi-info-circle"
+        viewBox="0 0 16 16"
+      >
+        <path
+          d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"
+        />
+        <path
+          d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
+        />
+      </svg>
+    </button>
+  </p>
+  <div class="collapse" id="collapseExample">
+    <div class="card card-body">
+      <p>
+        Questa pagina permette di gestire i film presenti nel database. E'
+        possibile aggiungere, modificare ed eliminare film.
+      </p>
+      <p>Cliccando su un film si aprirà un accordion con ulteriori dettagli.</p>
+      <p>Per cercare un film è possibile utilizzare la barra di ricerca.</p>
+      <p>
+        <strong>Nota:</strong> I film aggiunti verranno visualizzati nella
+        sezione "Film" del sito.
+      </p>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Cerca film..."
+      [(ngModel)]="searchTerm"
+      (input)="filterMovies()"
+    />
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Titolo</th>
+          <th scope="col">Anno</th>
+          <th scope="col">Durata</th>
+          <th scope="col">Genere</th>
+          <th scope="col">Regista</th>
+          <th scope="col">Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- testando i control flow del nuovo angular -->
+        @for (movie of filteredMovies; track movie.id; let idx = $index) {
+        <tr (click)="toggleAccordion(movie.id!)">
+          <td>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-chevron-down"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"
+              /></svg
+            >{{ movie.title }}
+          </td>
+          <td>{{ movie.year }}</td>
+          <td>{{ movie.runtime }}</td>
+          <td>
+            @for (genre of genres[this.idx]; track $index) {
+            <span
+              class="badge me-2"
+              [ngStyle]="{ 'background-color': this.genreColorGen(genre) }"
+            >
+              {{ genre }}
+            </span>
+            }
+          </td>
+          <td>{{ movie.director }}</td>
+          <td>
+            <button
+              class="btn btn-primary btn-sm"
+              (click)="openEditMovieModal(movie, $event)"
+            >
+              Modifica
+            </button>
+            <button
+              class="btn btn-danger btn-sm"
+              (click)="deleteMovie(movie.id!, $event)"
+            >
+              Elimina
+            </button>
+          </td>
+        </tr>
+        @if (expandedMovieId === movie.id) {
+        <tr>
+          <td colspan="6">
+            <div class="accordion-body">
+              <div class="row">
+                <div class="col-3">
+                  <img
+                    [src]="movie.posterUrl"
+                    alt="{{ movie.title }}"
+                    style="max-width: 100px"
+                  />
+                </div>
+                <div class="col-9">
+                  <p><strong>Attori:</strong> {{ movie.actors }}</p>
+                  <p><strong>Trama:</strong> {{ movie.plot }}</p>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        } } @empty {
+        <tr>
+          <td colspan="6" class="text-center">Nessun film disponibile</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modale per Aggiungi/Modifica Film -->
+  @if (isModalOpen) {
+  <div class="modal d-block" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            {{ editingMovie ? "Modifica Film" : "Aggiungi Film" }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            (click)="closeModal()"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <form #movieForm="ngForm" (ngSubmit)="onSubmit(movieForm)">
+            <div class="mb-3">
+              <label for="title" class="form-label">Titolo</label>
+              <input
+                type="text"
+                id="title"
+                class="form-control"
+                [(ngModel)]="currentMovie.title"
+                name="title"
+                required
+              />
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="year" class="form-label">Anno</label>
+                <input
+                  type="number"
+                  id="year"
+                  class="form-control"
+                  [(ngModel)]="currentMovie.year"
+                  name="year"
+                  required
+                />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="runtime" class="form-label">Durata (minuti)</label>
+                <input
+                  type="number"
+                  id="runtime"
+                  class="form-control"
+                  [(ngModel)]="currentMovie.runtime"
+                  name="runtime"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="genres" class="form-label">
+                  Genere
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-info-circle"
+                    viewBox="0 0 16 16"
+                  >
+                    <title>Separa ogni genere con una virgola</title>
+                    <path
+                      d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"
+                    />
+                    <path
+                      d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
+                    />
+                  </svg>
+                </label>
+                <input
+                  type="text"
+                  id="genres"
+                  class="form-control"
+                  [(ngModel)]="currentMovie.genres"
+                  name="genres"
+                  required
+                />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="director" class="form-label">Regista</label>
+                <input
+                  type="text"
+                  id="director"
+                  class="form-control"
+                  [(ngModel)]="currentMovie.director"
+                  name="director"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="actors" class="form-label">
+                Attori
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-info-circle"
+                  viewBox="0 0 16 16"
+                >
+                  <title>Separa ogni attore con una virgola</title>
+                  <path
+                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"
+                  />
+                  <path
+                    d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
+                  />
+                </svg>
+              </label>
+              <input
+                type="text"
+                id="actors"
+                class="form-control"
+                [(ngModel)]="currentMovie.actors"
+                name="actors"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="plot" class="form-label">Trama</label>
+              <textarea
+                id="plot"
+                class="form-control"
+                [(ngModel)]="currentMovie.plot"
+                name="plot"
+                rows="3"
+                required
+              ></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="posterUrl" class="form-label">URL Poster</label>
+              <input
+                type="text"
+                id="posterUrl"
+                class="form-control"
+                [(ngModel)]="currentMovie.posterUrl"
+                name="posterUrl"
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              {{ editingMovie ? "Salva Modifiche" : "Aggiungi Film" }}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+</div>

@@ -1,0 +1,36 @@
+<div class="login-background"></div>
+  <div class="container d-flex justify-content-center align-items-center vh-100" style="user-select: none;">
+    <div class="card login-card shadow-sm p-4">
+      <div class="text-center mb-4">
+        <img src="assets/cinemille-logo.png" alt="CineMille Logo" class="login-logo">
+      </div>
+      <h2 class="text-center mb-2">Register</h2>
+      <ul class="text-center mb-2 text-muted" style="font-size: 0.8rem; list-style-type: none; padding-left: 0;">
+        <li>Puoi creare un utente admin, mettendo <strong>a_</strong> prima dell'username</li>
+        <li>esempio: <strong>a_</strong>mario <span class="badge bg-danger">admin</span> </li>
+        <li>esempio: mario <span class="badge bg-primary">user</span> </li>
+
+      </ul>
+      <form (ngSubmit)="register()">
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" id="username" [(ngModel)]="username" name="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" id="password" [(ngModel)]="password" name="password" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label for="confirmPassword" class="form-label">Confirm Password</label>
+          <input type="password" id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword" class="form-control" required>
+        </div>
+        <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary btn-block">Register</button>
+        </div>
+      </form>
+      <div class="text-center mt-3">
+        <a href="/login" class="text-muted">Hai già un account? Login</a>
+      </div>
+    </div>
+  </div>

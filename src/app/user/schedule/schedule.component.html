@@ -1,0 +1,44 @@
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Programmazione Settimanale</h2>
+    <!-- <div class="row mb-3">
+      <div class="col-md-4">
+        <label for="yearSelect" class="form-label">Seleziona Anno:</label>
+        <select id="yearSelect" class="form-select" [(ngModel)]="selectYear" (change)="onChangeYear(selectYear)">
+          <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+        </select>
+      </div>
+    </div> -->
+  
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead class="table-light text-center">
+          <tr>
+            <th scope="col">Settimana</th>
+            <th scope="col">Periodo</th>
+            <th scope="col">Film e Sale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let week of weeks" class="align-middle text-center" >
+            <td class="fw-bold" [ngStyle]="{'border-left': '5px solid ' + generateWeekColor(week.startDate)}"
+            [ngClass]="{ 'bg-primary text-white': isCurrentWeek(week.startDate) }">
+              {{ week.weekNumber }}
+              {{ isCurrentWeek(week.startDate) ? '(Corrente)' : '' }}
+            </td>
+            <td>
+              {{ week.startDate }} - {{ week.endDate }}
+            </td>
+            <td>
+              <div *ngIf="week.movies.length === 0" class="text-muted">
+                Nessun film in programma.
+              </div>
+              <div *ngFor="let movie of week.movies">
+                <div>
+                  <strong>{{ movie.title }}</strong> (Sala: {{ movie.room.name }})
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
